@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card payment-card">
+                    <div class="card-header bg-gradient">
+                        <h3 class="mb-0 text-center">
+                            <i class="fas fa-credit-card me-2"></i>Payment Details
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <form method="POST" action="{{ url_for('index') }}" class="needs-validation" novalidate>
+                            <div class="mb-4">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Name
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="name" name="name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="payment_amount" class="form-label">
+                                    <i class="fas fa-money-bill-wave me-2"></i>Payment Amount
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" class="form-control form-control-lg" id="payment_amount" name="payment_amount" step="0.01" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter a valid amount.</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-percentage me-2"></i>GST Option
+                                </label>
+                                <div class="gst-options">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gst_option" id="with_gst" value="with_gst" required>
+                                        <label class="form-check-label" for="with_gst">
+                                            <i class="fas fa-plus-circle me-1"></i>With GST (18%)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gst_option" id="without_gst" value="without_gst" required>
+                                        <label class="form-check-label" for="without_gst">
+                                            <i class="fas fa-minus-circle me-1"></i>Without GST
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="total_amount" class="form-label">
+                                    <i class="fas fa-calculator me-2"></i>Total Payable Amount
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="text" class="form-control form-control-lg" id="total_amount" readonly>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100 submit-btn">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Payment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentAmount = document.getElementById('payment_amount');
+            const gstOptions = document.getElementsByName('gst_option');
+            const totalAmount = document.getElementById('total_amount');
+            const form = document.querySelector('form');
+
+            function calculateTotal() {
+                const amount = parseFloat(paymentAmount.value) || 0;
+                const withGst = document.getElementById('with_gst').checked;
+                
+                if (withGst) {
+                    totalAmount.value = (amount + (amount * 0.18)).toFixed(2);
+                } else {
+                    totalAmount.value = amount.toFixed(2);
+                }
+            }
+
+            paymentAmount.addEventListener('input', calculateTotal);
+            gstOptions.forEach(option => {
+                option.addEventListener('change', calculateTotal);
+            });
+
+            // Form validation
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+    </script>
+</body>
+</html>
