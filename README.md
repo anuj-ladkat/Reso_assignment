@@ -19,14 +19,14 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 2. Install dependencies:
-
+```bash
 pip install -r requirements.txt
+```
 
-
-3. Run the application:
-
+4. Run the application:
+```bash
 python app.py or python3 app.py
-
+```
 
 4. Open your browser and navigate to `http://localhost:5000`
 
